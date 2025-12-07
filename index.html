@@ -1,114 +1,135 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-<title>T7-CRUISE — PWA Mobile</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>T7-CRUISE — PWA Mobile</title>
 
-<!-- PWA Manifest -->
-<link rel="manifest" href="manifest.json">
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
 
-<style>
-body {
-  font-family: -apple-system, "SF Pro Rounded", sans-serif;
-  background: #f5f5f5;
-  margin: 0;
-  padding: 0;
-}
-header {
-  background: #889080;
-  padding: 18px;
-  color: white;
-  text-align: center;
-  font-size: 20px;
-  font-weight: 600;
-  border-bottom: 3px solid #6d7768;
-}
-.menu {
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-}
-.item {
-  background: white;
-  padding: 14px;
-  margin-bottom: 10px;
-  border-radius: 12px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.12);
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-  transition: 0.2s;
-}
-.item:active {
-  background: #dde3d8;
-}
-#details {
-  padding: 20px;
-  font-size: 16px;
-}
-.cmd {
-  margin-top: 12px;
-  padding: 12px;
-  background: #222;
-  color: white;
-  border-radius: 6px;
-  font-family: monospace;
-  font-size: 14px;
-}
-</style>
+  <style>
+    body {
+      font-family: -apple-system, "SF Pro Rounded", sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #889080;
+      padding: 18px;
+      color: white;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 600;
+      border-bottom: 3px solid #6d7768;
+    }
+    .menu {
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      gap: 10px;
+    }
+    .action-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: white;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.12);
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      cursor: pointer;
+      transition: 0.15s transform, 0.15s background;
+    }
+    .action-btn:active {
+      background: #dde3d8;
+      transform: scale(0.98);
+    }
+    #details {
+      padding: 20px;
+      font-size: 16px;
+    }
+    .cmd {
+      margin-top: 12px;
+      padding: 12px;
+      background: #222;
+      color: white;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 14px;
+      word-break: break-all;
+    }
+    .hint {
+      font-size: 13px;
+      color: #666;
+      margin-top: 6px;
+    }
+  </style>
 </head>
 
 <body>
 
-<header>🐾 T7-CRUISE — Mobile Dashboard</header>
+  <header>🐾 T7-CRUISE — Mobile Dashboard</header>
 
-<div class="menu" id="menu"></div>
+  <div class="menu">
+    <button class="action-btn" onclick="sendCommand('t7run')">🚀 t7run — Backup complet</button>
+    <button class="action-btn" onclick="sendCommand('t7status')">📊 t7status — Status disque</button>
+    <button class="action-btn" onclick="sendCommand('t7mount')">💽 t7mount — Monter le T7</button>
+    <button class="action-btn" onclick="sendCommand('t7ls')">📂 t7ls — Lister les backups</button>
+    <button class="action-btn" onclick="sendCommand('t7last')">⏱ t7last — Dernier backup</button>
+    <button class="action-btn" onclick="sendCommand('t7pushdbx')">⬆️ t7pushdbx — Sync Dropbox</button>
+    <button class="action-btn" onclick="sendCommand('t7clearlog')">🧹 t7clearlog — Vider le log</button>
+    <button class="action-btn" onclick="sendCommand('t7reload')">🔁 t7reload — Reload agent</button>
+    <button class="action-btn" onclick="sendCommand('t7health')">❤️ t7health — Healthcheck</button>
+    <button class="action-btn" onclick="sendCommand('t7perf')">⚡ t7perf — Perf I/O</button>
+    <button class="action-btn" onclick="sendCommand('t7fast')">🚀 t7fast — Dashboard rapide</button>
+  </div>
 
-<div id="details">
-  <h3>Sélectionne une commande</h3>
-  <p>⚡ Interface optimisée iPhone, offline-ready.</p>
-</div>
+  <div id="details">
+    <h3>Sélectionne une commande</h3>
+    <p>⚡ Interface optimisée iPhone, offline-ready.</p>
+    <p class="hint">Pour l’instant, les boutons affichent la commande à lancer dans ton terminal Mac.</p>
+  </div>
 
-<script>
-const features = [
-  { alias: "t7run", desc: "Backup complet instantané", cmd: "t7run" },
-  { alias: "t7status", desc: "Diagnostic complet APFS / SMART / I/O", cmd: "t7status" },
-  { alias: "t7mount", desc: "Monte le SSD T7 si démonté", cmd: "t7mount" },
-  { alias: "t7ls", desc: "Liste des backups présents", cmd: "t7ls" },
-  { alias: "t7last", desc: "Dernier backup effectué", cmd: "t7last" },
-  { alias: "t7pushdbx", desc: "Sync Dropbox manuelle", cmd: "t7pushdbx" },
-  { alias: "t7clearlog", desc: "Vide le log principal", cmd: "t7clearlog" },
-  { alias: "t7reload", desc: "Recharge le LaunchDaemon", cmd: "t7reload" },
-  { alias: "t7health", desc: "Healthcheck rapide", cmd: "t7health" },
-  { alias: "t7perf", desc: "Test performances I/O", cmd: "t7perf" },
-  { alias: "t7fast", desc: "Dashboard ultra rapide", cmd: "t7fast" }
-];
+  <script>
+    const features = [
+      { alias: "t7run",      desc: "Backup complet instantané (health + rsync + sha256 + rotation)", cmd: "t7run" },
+      { alias: "t7status",   desc: "Diagnostic complet APFS / SMART / I/O",                          cmd: "t7status" },
+      { alias: "t7mount",    desc: "Monte le SSD T7 si macOS l’a démonté",                           cmd: "t7mount" },
+      { alias: "t7ls",       desc: "Liste les backups disponibles sur le T7",                        cmd: "t7ls" },
+      { alias: "t7last",     desc: "Affiche le dossier du backup le plus récent",                    cmd: "t7last" },
+      { alias: "t7pushdbx",  desc: "Synchronisation manuelle T7 → Dropbox",                          cmd: "t7pushdbx" },
+      { alias: "t7clearlog", desc: "Vide proprement le log principal",                               cmd: "t7clearlog" },
+      { alias: "t7reload",   desc: "Recharge le LaunchDaemon / LaunchAgent associé",                 cmd: "t7reload" },
+      { alias: "t7health",   desc: "Healthcheck rapide du T7 (infos disque + dernier backup)",       cmd: "t7health" },
+      { alias: "t7perf",     desc: "Test rapide des performances d’I/O avec iostat",                 cmd: "t7perf" },
+      { alias: "t7fast",     desc: "Version ultra rapide du dashboard (df + iostat light)",          cmd: "t7fast" }
+    ];
 
-const menu = document.getElementById("menu");
-const details = document.getElementById("details");
+    const details = document.getElementById("details");
 
-features.forEach((f, i) => {
-  const d = document.createElement("div");
-  d.className = "item";
-  d.innerText = f.alias;
-  d.onclick = () => showFeature(i);
-  menu.appendChild(d);
-});
+    function sendCommand(alias) {
+      const f = features.find(x => x.alias === alias);
+      if (!f) return;
 
-function showFeature(index) {
-  const f = features[index];
-  details.innerHTML = `
-    <h3>${f.alias}</h3>
-    <p>${f.desc}</p>
-    <div class="cmd">${f.cmd}</div>
-  `;
-}
+      details.innerHTML = `
+        <h3>${f.alias}</h3>
+        <p>${f.desc}</p>
+        <div class="cmd">${f.cmd}</div>
+        <p class="hint">💡 Sur ton Mac : ouvre le terminal et tape <strong>${f.cmd}</strong>.</p>
+      `;
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
-}
-</script>
+      alert("Commande à lancer sur ton Mac : " + f.cmd);
+    }
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
 
 </body>
 </html>
