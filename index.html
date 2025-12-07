@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>T7-CRUISE — PWA Mobile</title>
+
+<!-- PWA Manifest -->
+<link rel="manifest" href="manifest.json">
+
+<style>
+body {
+  font-family: -apple-system, "SF Pro Rounded", sans-serif;
+  background: #f5f5f5;
+  margin: 0;
+  padding: 0;
+}
+header {
+  background: #889080;
+  padding: 18px;
+  color: white;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 600;
+  border-bottom: 3px solid #6d7768;
+}
+.menu {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+.item {
+  background: white;
+  padding: 14px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.12);
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  transition: 0.2s;
+}
+.item:active {
+  background: #dde3d8;
+}
+#details {
+  padding: 20px;
+  font-size: 16px;
+}
+.cmd {
+  margin-top: 12px;
+  padding: 12px;
+  background: #222;
+  color: white;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 14px;
+}
+</style>
+</head>
+
+<body>
+
+<header>🐾 T7-CRUISE — Mobile Dashboard</header>
+
+<div class="menu" id="menu"></div>
+
+<div id="details">
+  <h3>Sélectionne une commande</h3>
+  <p>⚡ Interface optimisée iPhone, offline-ready.</p>
+</div>
+
+<script>
+const features = [
+  { alias: "t7run", desc: "Backup complet instantané", cmd: "t7run" },
+  { alias: "t7status", desc: "Diagnostic complet APFS / SMART / I/O", cmd: "t7status" },
+  { alias: "t7mount", desc: "Monte le SSD T7 si démonté", cmd: "t7mount" },
+  { alias: "t7ls", desc: "Liste des backups présents", cmd: "t7ls" },
+  { alias: "t7last", desc: "Dernier backup effectué", cmd: "t7last" },
+  { alias: "t7pushdbx", desc: "Sync Dropbox manuelle", cmd: "t7pushdbx" },
+  { alias: "t7clearlog", desc: "Vide le log principal", cmd: "t7clearlog" },
+  { alias: "t7reload", desc: "Recharge le LaunchDaemon", cmd: "t7reload" },
+  { alias: "t7health", desc: "Healthcheck rapide", cmd: "t7health" },
+  { alias: "t7perf", desc: "Test performances I/O", cmd: "t7perf" },
+  { alias: "t7fast", desc: "Dashboard ultra rapide", cmd: "t7fast" }
+];
+
+const menu = document.getElementById("menu");
+const details = document.getElementById("details");
+
+features.forEach((f, i) => {
+  const d = document.createElement("div");
+  d.className = "item";
+  d.innerText = f.alias;
+  d.onclick = () => showFeature(i);
+  menu.appendChild(d);
+});
+
+function showFeature(index) {
+  const f = features[index];
+  details.innerHTML = `
+    <h3>${f.alias}</h3>
+    <p>${f.desc}</p>
+    <div class="cmd">${f.cmd}</div>
+  `;
+}
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
+</script>
+
+</body>
+</html>
